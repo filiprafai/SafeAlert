@@ -3,7 +3,6 @@ package com.filip.safealert;
 import android.Manifest;
 import android.content.*;
 import android.content.pm.PackageManager;
-import android.hardware.*;
 import android.location.LocationManager;
 import android.net.Uri;
 import android.os.*;
@@ -20,9 +19,11 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
     private boolean sosInCurs = false;
+    private boolean programareActiva = false;
     private CountDownTimer sosCountdown;
     private BatteryHelper batteryHelper = new BatteryHelper();
     private ShortcutHelper shortcutHelper;
+    private ScheduleHelper scheduleHelper = new ScheduleHelper();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,6 +55,22 @@ public class MainActivity extends AppCompatActivity {
             }
             @Override public void onTabUnselected(TabLayout.Tab tab) {}
             @Override public void onTabReselected(TabLayout.Tab tab) {}
+        });
+
+        final EditText etMsg = findViewById(R.id.etMesajProgramat);
+        final EditText etMin = findViewById(R.id.etMinute);
+        final Button btnP = findViewById(R.id.btnProgramare);
+
+        btnP.setOnClickListener(v -> {
+            if (!programareActiva) {
+                if (etMsg.getText().toString().isEmpty() || etMin.getText().toString().isEmpty()) return;
+                int min = Integer.parseInt(etMin.getText().toString());
+                scheduleHelper.pornesteProgramare(min, etMsg.getText().toString(), ConfigManager.incarcăContacte(this), btnP);
+                programareActiva = true;
+            } else {
+                scheduleHelper.opresteProgramare(btnP);
+                programareActiva = false;
+            }
         });
 
         final EditText e1 = findViewById(R.id.etNr1), e2 = findViewById(R.id.etNr2), e3 = findViewById(R.id.etNr3), e4 = findViewById(R.id.etNr4), e5 = findViewById(R.id.etNr5);
